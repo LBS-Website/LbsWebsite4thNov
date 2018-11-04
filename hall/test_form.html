@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<style type="text/css">
+
+
+   
+
+    .is-hidden {
+      display: none !important;
+    }
+
+
+    @keyframes rotate {
+     100% { transform: rotate(360deg); }
+    }
+
+    @keyframes dash {
+     0% { stroke-dasharray: 1,200; stroke-dashoffset: 0; }
+     50% { stroke-dasharray: 89,200; stroke-dashoffset: -35; }
+     100% { stroke-dasharray: 89,200; stroke-dashoffset: -124; }
+    }
+
+    .loading {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+    }
+
+    .loading-spinner svg {
+      position: relative;
+      animation: rotate 2s linear infinite;
+      height: 50px;
+      width: 50px;
+    }
+
+    .loading-spinner circle {
+      stroke: #F18260;
+      stroke-dasharray: 1,200;
+      stroke-dashoffset: 0;
+      stroke-linecap: round;
+      animation: dash 1.5s ease-in-out infinite;
+    }
+</style>
+</head>
+
+
+<body>
+	<form name="submit-to-google-sheet">
+	  <input name="name" type="name" placeholder="Name" required>	
+	  <input name="email" type="email" placeholder="Email" required>
+	  <button type="submit">Send</button>
+	  </form>
+
+	  <div class="loading js-loading is-hidden">
+      <div class="loading-spinner">
+        <svg><circle cx="25" cy="25" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/></svg>
+      </div>
+    </div>
+
+    <p class="js-success-message is-hidden">Success!</p>
+    <p class="js-error-message is-hidden">Error!</p>
+
+		<script>
+		  const scriptURL = 'https://script.google.com/macros/s/AKfycbyekM1pNeu5MG5DufK1JiO_f8tEiwnIhxJEZ_-SWyKHrCptHwAj/exec'
+		  const form = document.forms['submit-to-google-sheet']
+		    const loading = document.querySelector('.js-loading')
+		    const successMessage = document.querySelector('.js-success-message')
+		    const errorMessage = document.querySelector('.js-error-message')
+		    form.addEventListener('submit', e => {
+		      e.preventDefault()
+		      showLoadingIndicator()
+		      fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+		        .then(response => showSuccessMessage(response))
+		        .catch(error => showErrorMessage(error))
+		    })
+		    function showLoadingIndicator () {
+		      form.classList.add('is-hidden')
+		      loading.classList.remove('is-hidden')
+		    }
+		    function showSuccessMessage (response) {
+		      console.log('Success!', response)
+		      setTimeout(() => {
+		        successMessage.classList.remove('is-hidden')
+		        loading.classList.add('is-hidden')
+		      }, 100)
+		    }
+		    function showErrorMessage (error) {
+		      console.error('Error!', error.message)
+		      setTimeout(() => {
+		        errorMessage.classList.remove('is-hidden')
+		        loading.classList.add('is-hidden')
+		      }, 100)
+		    }
+		</script>
+
+</body>
+</html> 
+
